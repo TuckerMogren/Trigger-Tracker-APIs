@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+from typing import Optional
+
 
 #Create datamodel for user
 class User(BaseModel):

@@ -2,8 +2,8 @@ from database.sqliteCreateTables import cursor, connection
 class CRUD():
     def retrieve():
         print("Read")
-    def Insert(Fname, Lname, Username, Userid, Email, Deleted, Password):
-        sql = ('''INSERT INTO users(userID, fname, lname,username, password, email, deleted) VALUES(Fname, Lname, Username, Userid, Email, Deleted, Password)''')
+    def Insert(Fname, Lname, Username, Userid, Email, Deleted, PWD):
+        sql = ('''INSERT INTO users(userID, fname, lname,username, password, email, deleted) VALUES(Fname, Lname, Username, Userid, Email, Deleted, PWD)''')
         return sql
     def RemoveSoft():
         print("Soft Remove")
