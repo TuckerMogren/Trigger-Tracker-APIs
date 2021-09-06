@@ -19,7 +19,7 @@ print(CRUD.retrieve())
 #Create User
 
 
-@app.get("/user/userID")
+@app.post("/user")
 async def createUser(user: User):
-    CRUD.retrieve()
+    CRUD.Insert(user);
     return user
