@@ -1,7 +1,5 @@
 from os import stat
-from typing import ValuesView
 from fastapi import FastAPI, status, Response
-from pydantic.errors import cls_kwargs
 from SQLFunctions import CRUD
 from Models.UserModel import User 
 
@@ -9,14 +7,24 @@ from Models.UserModel import User
 app = FastAPI()
 
 #Create User
-@app.post("/user", status_code=status.HTTP_201_CREATED)
+@app.post("/user")
 async def createUser(user: User, res:Response):
     sql = CRUD.Insert();
-    values = user.fname, user.lname, user.username, user.userID, user.email, user.deleted, user.password
+    values = user.userID, user.fname, user.lname, user.username, user.password, user.email, user.deleted, 
     
     if CRUD.executeSQL(sql, values) == 1:
         res.status_code = status.HTTP_201_CREATED
     else:
-        res.status_code = status.HTTP_400_BAD_REQUEST   
-    return sql
+        res.status_code = status.HTTP_406_NOT_ACCEPTABLE
+    return sql, values, user
 
+@app.delete("/user")
+async def softDeleteUser(userID, res:Response):
+    sql = CRUD.RemoveSoft()
+    values = 'users', 'deleted', 'userID', userID
+    if CRUD.executeSQL(sql, values) == 1:
+        res.status_code = status.HTTP_202_ACCEPTED
+    else:
+        res.status_code = status.HTTP_406_NOT_ACCEPTABLE
+
+    return sql, values, userID

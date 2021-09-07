@@ -17,16 +17,16 @@ class CRUD():
         sql = 'INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?)'
         return (sql)
     def RemoveSoft():
-        print("Soft Remove")
+        sql = '''UPDATE (?) SET (?) = 1 WHERE (?) = (?)'''
+        return (sql)
     def RemoveHard():
         print("Hard Remove")
     def Update():
         print("Update")
 
-    def executeSQL(statement):
-        print("In EXECUTE" + statement)
+    def executeSQL(statement, values):
         try:
-            cursor.execute()
+            cursor.execute(statement, values)
             connection.commit()
             return 1
         except Error as e:
