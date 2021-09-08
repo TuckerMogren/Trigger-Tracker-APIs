@@ -1,5 +1,4 @@
 from Models.UserModel import User
-from database.sqliteCreateTables import cursor, connection, Error
 
 class CRUD():
     def __init__(self, user:User):
