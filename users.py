@@ -1,30 +1,14 @@
-from os import stat
-from fastapi import FastAPI, status, Response
-from SQLFunctions import CRUD
+from fastapi import FastAPI
 from Models.UserModel import User 
+from database.sqliteCreateTables import database, users
 
 #python3 -m uvicorn users:app --reload
 app = FastAPI()
 
+
 #Create User
-@app.post("/user")
-async def createUser(user: User, res:Response):
-    sql = CRUD.Insert();
-    values = user.userID, user.fname, user.lname, user.username, user.password, user.email, user.deleted, 
-    
-    if CRUD.executeSQL(sql, values) == 1:
-        res.status_code = status.HTTP_201_CREATED
-    else:
-        res.status_code = status.HTTP_406_NOT_ACCEPTABLE
-    return sql, values, user
-
-@app.delete("/user")
-async def softDeleteUser(userID, res:Response):
-    sql = CRUD.RemoveSoft()
-    values = 'users', 'deleted', 'userID', userID
-    if CRUD.executeSQL(sql, values) == 1:
-        res.status_code = status.HTTP_202_ACCEPTED
-    else:
-        res.status_code = status.HTTP_406_NOT_ACCEPTABLE
-
-    return sql, values, userID
+@app.post("/user/")
+async def createUser(user: User):
+    query = users.insert().values(userID=user.UserID, fname=user.FName, lname=user.LName, username=user.UserName, password=user.PassWord, email=user.EMail, deleted=user.Deleted)
+    last_record_id = await database.execute(query)
+    return {"id": last_record_id}
