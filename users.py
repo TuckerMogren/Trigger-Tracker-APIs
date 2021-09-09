@@ -9,6 +9,9 @@ app = FastAPI()
 #Create User
 @app.post("/user/")
 async def createUser(user: User):
+    user.UserID = user.UserID + 432
     query = users.insert().values(userID=user.UserID, fname=user.FName, lname=user.LName, username=user.UserName, password=user.PassWord, email=user.EMail, deleted=user.Deleted)
-    last_record_id = await database.execute(query)
-    return {"id": last_record_id}
+    await database.execute(query=query)
+    return {**user.dict()}
+
+

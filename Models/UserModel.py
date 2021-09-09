@@ -10,4 +10,4 @@ class User(BaseModel):
     UserName: str
     PassWord: str
     EMail: str
-    Deleted: Optional[bool] = None
+    Deleted: Optional[bool] = False

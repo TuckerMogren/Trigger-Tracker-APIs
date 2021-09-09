@@ -10,4 +10,4 @@ class User(BaseModel):
     photo: str
     photoTimeStamp: time
     entryText: str
-    deleted: Optional[bool] = None
+    deleted: Optional[bool] = False
