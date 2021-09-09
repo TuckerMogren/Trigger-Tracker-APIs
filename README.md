@@ -9,4 +9,4 @@ FastAPI 3.10.0.2
 Uvicorn 1.0.3  
 Databases 0.5.1  
 SQLAlchemy 1.4.23  
-aiosqlite-0.17.0  
+python-multipart 0.0.5  
