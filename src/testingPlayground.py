@@ -1,6 +1,6 @@
 from SQLFunctions import CRUD
 from Models.UserModel import User
-from database.sqliteCreateTables import cursor, connection
+from sqliteCreateTables import cursor, connection
 
 User.userID = 1
 User.fname = "Tucker"
