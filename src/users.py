@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from Models.UserModel import User 
-from database.sqliteCreateTables import database, users
+from sqliteCreateTables import database, users
 
 #python3 -m uvicorn users:app --reload
 app = FastAPI()
