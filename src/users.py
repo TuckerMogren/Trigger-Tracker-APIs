@@ -1,17 +1,72 @@
-from fastapi import FastAPI
-from Models.UserModel import User 
-from sqliteCreateTables import database, users
+from fastapi import FastAPI, status, Response
+from sqlite3 import Error
+from sqlalchemy.engine import result
 
-#python3 -m uvicorn users:app --reload
+from sqlalchemy.sql.expression import except_
+from Models.UserModel import User
+from sqliteCreateTables import database, users
+import logging
+
+logger = logging.getLogger("Mylogs")
+logger.setLevel(logging.DEBUG)
+
+# python3 -m uvicorn users:app --reload
 app = FastAPI()
 
 
-#Create User
+##This if statement will only execute if this file is being executed directly and not by any other modules if imported
+#if __name__ == "__main__":
+#    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# Create User
 @app.post("/user/")
-async def createUser(user: User):
-    user.UserID = user.UserID + 432
-    query = users.insert().values(userID=user.UserID, fname=user.FName, lname=user.LName, username=user.UserName, password=user.PassWord, email=user.EMail, deleted=user.Deleted)
-    await database.execute(query=query)
-    return {**user.dict()}
+async def createUser(user: User, res:Response):
+    try:
+        statement = users.insert().values(userID=user.UserID, fname=user.FName, lname=user.LName,
+                                  username=user.UserName, password=user.PassWord, email=user.EMail, deleted=user.Deleted)
+        await database.execute(query=statement)
+    except Error as e:
+        res.status_code = status.HTTP_400_BAD_REQUEST
+        return [{"Status": res.status_code}, {"UserID": user.UserID, "Username":user.UserName}, {"ErrorMessage":e.args}]
+    res.status_code = status.HTTP_201_CREATED
+    return {"Status": res.status_code, "UserID": user.UserID}
 
 
+@app.get("/user/{userID}")
+async def getUser(userID, res:Response):
+    try:
+        statement = users.select().where(users.c.userID == userID)
+        results = await database.fetch_all(query=statement)
+        if results == []:
+            raise AssertionError()
+    except AssertionError as e:
+        res.status_code = status.HTTP_404_NOT_FOUND
+        return [{"Status": res.status_code}, {"ErrorMessage":"No data found in database for userID: " + userID}]
+    except Error as e:
+        res.status_code = status.HTTP_400_BAD_REQUEST
+        return [{"Status": res.status_code}, {"ErrorMessage":e.args}]
+    res.status_code = status.HTTP_201_CREATED
+    return [{"Status": res.status_code}, {"UserID":userID}, {"results":results} ]
+
+
+@app.patch("/User/{userID}")
+async def softDeleteUser(userID, res:Response):
+    try:
+        statement = users.update().where(users.c.userID == userID).values(deleted=True)
+        results = await database.execute(statement)
+    except Error as e:
+        res.status_code = status.HTTP_400_BAD_REQUEST
+        return [{"Status": res.status_code}, {"ErrorMessage":e.args}]
+    res.status_code = status.HTTP_202_ACCEPTED
+    return [{"Status": res.status_code}, {"UserID":userID}, {"results":results} ]
+
+@app.delete("/User/{userID}/Account/{userName}")
+async def hardDeleteUser(userID, userName, res:Response):
+    try:
+        statement = users.delete().where(users.c.userID==userID and users.c.userName==userName)
+        results = await database.execute(statement)
+    except Error as e:
+        res.status_code = status.HTTP_400_BAD_REQUEST
+        return [{"Status": res.status_code}, {"ErrorMessage":e.args}]
+    res.status_code = status.HTTP_202_ACCEPTED
+    return [{"Status": res.status_code}, {"UserID":userID, "userName":userName}, {"Messasge":"Hard delete was successful"} ]

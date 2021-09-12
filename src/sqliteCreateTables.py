@@ -1,4 +1,3 @@
-from typing import List
 import databases
 from sqlalchemy import Column, Integer, String, MetaData, create_engine, Table, BLOB, Boolean, TIME, ForeignKey
 from fastapi import FastAPI
@@ -45,7 +44,7 @@ photos = Table(
 
 engine = create_engine(
 
-    DATABASE_URL, echo = True, connect_args={"check_same_thread": False}
+    DATABASE_URL, echo = False, connect_args={"check_same_thread": False}
 )
 
 metadata.create_all(engine)
@@ -54,8 +53,10 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def startup():
+    print("Application is starting..... Connecting to database.")
     await database.connect()
 
 @app.on_event("shutdown")
 async def shutdown():
+    print("Application is shuting down..... disconnecting from database.")
     await database.disconnect()
