@@ -19,7 +19,7 @@ app = FastAPI()
 #    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 # Create User
-@app.post("/user/")
+@app.post("/api/v1/user/")
 async def createUser(user: User, res:Response):
     try:
         statement = users.insert().values(userID=user.UserID, fname=user.FName, lname=user.LName,
@@ -32,7 +32,7 @@ async def createUser(user: User, res:Response):
     return {"Status": res.status_code, "UserID": user.UserID}
 
 
-@app.get("/user/{userID}")
+@app.get("/api/v1/user/{userID}")
 async def getUser(userID, res:Response):
     try:
         statement = users.select().where(users.c.userID == userID)
@@ -45,11 +45,11 @@ async def getUser(userID, res:Response):
     except Error as e:
         res.status_code = status.HTTP_400_BAD_REQUEST
         return [{"Status": res.status_code}, {"ErrorMessage":e.args}]
-    res.status_code = status.HTTP_201_CREATED
+    res.status_code = status.HTTP_200_OK
     return [{"Status": res.status_code}, {"UserID":userID}, {"results":results} ]
 
 
-@app.patch("/User/{userID}")
+@app.patch("/api/v1/User/{userID}")
 async def softDeleteUser(userID, res:Response):
     try:
         statement = users.update().where(users.c.userID == userID).values(deleted=True)
@@ -60,13 +60,3 @@ async def softDeleteUser(userID, res:Response):
     res.status_code = status.HTTP_202_ACCEPTED
     return [{"Status": res.status_code}, {"UserID":userID}, {"results":results} ]
 
-@app.delete("/User/{userID}/Account/{userName}")
-async def hardDeleteUser(userID, userName, res:Response):
-    try:
-        statement = users.delete().where(users.c.userID==userID and users.c.userName==userName)
-        results = await database.execute(statement)
-    except Error as e:
-        res.status_code = status.HTTP_400_BAD_REQUEST
-        return [{"Status": res.status_code}, {"ErrorMessage":e.args}]
-    res.status_code = status.HTTP_202_ACCEPTED
-    return [{"Status": res.status_code}, {"UserID":userID, "userName":userName}, {"Messasge":"Hard delete was successful"} ]
