@@ -3,8 +3,7 @@ FROM python:3.9-slim
 
 COPY ./src /app/src
 COPY ./requirements.txt /app
-RUN mkdir -p /app/database
-COPY ./database/sqliteCreatTable.py /app/database
+
 
 WORKDIR /app
 

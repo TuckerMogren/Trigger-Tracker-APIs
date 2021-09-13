@@ -2,8 +2,6 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
-from sqlalchemy.sql.sqltypes import BLOB
-
 
 #Create datamodel for photos
 class Photo(BaseModel):
