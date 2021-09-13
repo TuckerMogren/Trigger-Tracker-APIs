@@ -1,7 +1,7 @@
 from fastapi import FastAPI, status, Response
 from sqlite3 import Error
 from Models.UserModel import User
-from sqliteCreateTables import database, users
+from database.sqliteCreateTables import database, users
 
 
 # python3 -m uvicorn users:app --reload

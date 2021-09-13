@@ -1,7 +1,8 @@
 from fastapi import FastAPI, status, Response
 from sqlite3 import Error
 from Models.PhotosModel import Photo
-from sqliteCreateTables import database, photos
+from database.sqliteCreateTables import database, photos
+
 
 
 app = FastAPI()
