@@ -8,6 +8,7 @@ RUN mkdir -p /app/database
 WORKDIR /app
 
 RUN pip3 install -r requirements.txt
+#RUN python3 sqliteCreatTables 
 
 WORKDIR /app/src
 

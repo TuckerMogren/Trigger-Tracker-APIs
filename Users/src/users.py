@@ -1,14 +1,8 @@
 from fastapi import FastAPI, status, Response
 from sqlite3 import Error
-from sqlalchemy.engine import result
-
-from sqlalchemy.sql.expression import except_
 from Models.UserModel import User
 from sqliteCreateTables import database, users
-import logging
 
-logger = logging.getLogger("Mylogs")
-logger.setLevel(logging.DEBUG)
 
 # python3 -m uvicorn users:app --reload
 app = FastAPI()
