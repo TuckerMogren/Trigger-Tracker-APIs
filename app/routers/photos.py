@@ -1,14 +1,30 @@
-from fastapi import FastAPI, status, Response
+from fastapi import status, Response, APIRouter
 from sqlite3 import Error
-from Models.PhotosModel import Photo
 from database.sqliteCreateTables import database, photos
+from datetime import datetime
+from pydantic import BaseModel
+from typing import Optional
+
+#Create datamodel for photos
+class Photo(BaseModel):
+    photoID: int
+    userID: int
+    photo: str
+    photoTimeStamp: datetime
+    entryText: str
+    deleted: Optional[bool] = False
 
 
+    #https://stackoverflow.com/questions/68893175/error-value-not-declarable-with-json-schema-for-purepath-with-pydantic-and-fasta
+    #required for the use of SQL BLOB and DateTime
+    class Config:
+        arbitrary_types_allowed = True
 
-app = FastAPI()
+
+router = APIRouter()
 
 
-@app.post("/api/v1/photo/")
+@router.post("/api/v1/photo/", tags=["photos"])
 async def createPhoto(photo: Photo, res: Response):
     try:
         statement = photos.insert().values(photoID=photo.photoID, userID=photo.userID, photo=photo.photo,
@@ -21,7 +37,7 @@ async def createPhoto(photo: Photo, res: Response):
     return {"Status": res.status_code, "PhotoID": photo.photoID, "UserID": photo.userID}
 
 
-@app.get("/api/v1/photo/{photoID}")
+@router.get("/api/v1/photo/{photoID}", tags=["photos"])
 async def getPhoto(photoID, res: Response):
     try:
         statement = photos.select(photos.c.userID).where(photos.c.photoID == photoID)

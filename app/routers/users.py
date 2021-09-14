@@ -1,11 +1,22 @@
-from fastapi import FastAPI, status, Response
+from fastapi import status, Response
 from sqlite3 import Error
-from Models.UserModel import User
+from pydantic import BaseModel
+from typing import Optional
+from fastapi.routing import APIRouter
 from database.sqliteCreateTables import database, users
 
+#Create datamodel for user
+class User(BaseModel):
+    UserID: int
+    FName: str
+    LName: str
+    UserName: str
+    PassWord: str
+    EMail: str
+    Deleted: Optional[bool] = False
 
 # python3 -m uvicorn users:app --reload
-app = FastAPI()
+router = APIRouter()
 
 
 ##This if statement will only execute if this file is being executed directly and not by any other modules if imported
@@ -13,7 +24,7 @@ app = FastAPI()
 #    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 # Create User
-@app.post("/api/v1/user/")
+@router.post("/api/v1/user/", tags=["users"])
 async def createUser(user: User, res:Response):
     try:
         statement = users.insert().values(userID=user.UserID, fname=user.FName, lname=user.LName,
@@ -26,7 +37,7 @@ async def createUser(user: User, res:Response):
     return {"Status": res.status_code, "UserID": user.UserID}
 
 
-@app.get("/api/v1/user/{userID}")
+@router.get("/api/v1/user/{userID}", tags=["users"])
 async def getUser(userID, res:Response):
     try:
         statement = users.select().where(users.c.userID == userID)
@@ -43,7 +54,7 @@ async def getUser(userID, res:Response):
     return [{"Status": res.status_code}, {"UserID":userID}, {"results":results} ]
 
 
-@app.patch("/api/v1/User/{userID}")
+@router.patch("/api/v1/User/{userID}", tags=["users"])
 async def softDeleteUser(userID, res:Response):
     try:
         statement = users.update().where(users.c.userID == userID).values(deleted=True)
